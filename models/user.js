@@ -17,6 +17,7 @@ var User = new Schema({
         validate: [validateEmail, 'Please fill a valid email address'],
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
     },
+    // username: String,
     password: String,
     phone: String,
     name: String,

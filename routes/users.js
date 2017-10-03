@@ -44,9 +44,16 @@ router.post('/register', function(req, res){
 
     if(req.body.name) {
       user.name = req.body.name;
-      user.image = '/images/profiles/'+req.body.name.charAt(0)+'.png'
+      // user.image = '/images/profiles/'+req.body.name.charAt(0)+'.png'
     } else {
       return res.status(500).json({message: 'Please Enter your name and continue'});
+    }
+
+    if(req.body.image) {
+      user.image = req.body.image;
+      // user.image = '/images/profiles/'+req.body.name.charAt(0)+'.png'
+    } else {
+      user.image = '/images/profiles/'+req.body.name.charAt(0)+'.png'
     }
 
     if(req.body.phone) {
@@ -58,7 +65,7 @@ router.post('/register', function(req, res){
     if(req.body.about) {
       user.about = req.body.about;
     } else {
-      return res.status(500).json({message: 'Please Enter your company name and continue'});
+      return res.status(500).json({message: 'Please Enter Something about yourself and continue'});
     }
 
     if(req.body.companyName) {

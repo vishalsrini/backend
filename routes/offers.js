@@ -65,22 +65,34 @@ offersRouter.route('/users')
        raw: null,
        processed: null
    }; 
-    rawCashew.find({}, function(err, res) {
-        if(err) throw err;
-        getLoggedInUserPost(req, res, function(err, post) {
-            if(err) throw err;
-            offers.raw = post;
-            processedCashew.find({}, function(err, res) {
+//     rawCashew.find({}, function(err, res) {
+//         if(err) throw err;
+//         getLoggedInUserPost(req, res, function(err, post) {
+//             if(err) throw err;
+//             offers.raw = post;
+//             processedCashew.find({}, function(err, res) {
+//                 if(err) throw err;
+//                 getLoggedInUserPost(req, res, function(err, post) {
+//                     if(err) throw err;
+//                     offers.processed = post;
+//                     resp.status(200).json(offers);
+//                 });
+//             });
+//         }); 
+//     });
+// });
+
+rawCashew.find({postedBy: req.decoded._doc._id}, function(err, res) {
+        if(err) throw err;      
+            offers.raw = res;
+            processedCashew.find({postedBy: req.decoded._doc._id}, function(err, res) {
                 if(err) throw err;
-                getLoggedInUserPost(req, res, function(err, post) {
-                    if(err) throw err;
-                    offers.processed = post;
+                
+                    offers.processed = res;
                     resp.status(200).json(offers);
                 });
             });
         }); 
-    });
-});
 
 // -------------------------------------------- Raw Cashew Offers ------------------------------------
 /** CRUD on all raw cashew offers */
