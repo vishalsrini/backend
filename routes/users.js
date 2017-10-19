@@ -7,7 +7,7 @@ var email 	= require("emailjs");
 
 var server 	= email.server.connect({
    user:    "vishalvishal619@gmail.com", 
-   password:"Ramamani123Aug", 
+   password:"Rama17Aug", 
    host:    "smtp.gmail.com", 
    ssl:     true
 });
@@ -126,12 +126,13 @@ router.post('/register', function(req, res){
       /** Authenticate yourself using passport. This is local authentication */
       passport.authenticate('local')(req, res, function(){
         // send the message and get a callback with an error or details of the message that was sent
+        console.log("Response from server and request from server: ------------------------------------------------------------------------------------- " + req, res + "------------------------------------------------------------------------------------ end -----------------------");
         server.send({
-          text:    "i hope this works", 
+          text:    "Hi, \n Please click the following link to activate your account http://localhost:4200/activate/" + req.user._id, 
           from:    "Vishal <vishalvishal619@gmail.com>", 
-          to:      "Vishal <vishal240893@hotmail.com>",
-          cc:      "Manju Parkavi <manjuparkavi25@gmail.com>",
-          subject: "testing emailjs"
+          to:      req.body.name + "<" + req.body.username +">",
+          bcc:      "Vishal Srinivasan <vishalvishal619@gmail.com>",
+          subject: "User Verification from APAARR PROCUREMENT SERVICES"
         }, function(err, message) { 
           console.log(err || message);
           return res.status(200).json({status: 'Registration Successful!'});  
@@ -168,6 +169,11 @@ router.post('/login', function(req, res, next){
         })
       }
 
+      if(!user.verified) {
+        return res.status(403).json({
+          err: 'Please verify your authentication mail sent to the registered mailId and continue'
+        })
+      }
       console.log('User in Users', user);
       var token = Verify.getToken(user);    // Generating JSON Web Token (JWT) here
 
@@ -179,6 +185,55 @@ router.post('/login', function(req, res, next){
     })
   })(req, res, next);
 });
+
+/**
+ * Activation a particular user by clicking on the refferal link
+ */
+router.post("/activate/:id", function(req, res, next) {
+    /**
+   * User authentication done using passport
+   */
+  passport.authenticate('local', function(err, user, info){
+
+    if(err) {
+      return next(err);
+    }
+
+    if(!user) {
+      return res.status(401).json({
+        err: info
+      });
+    }
+
+    req.logIn(user, function(err){          // Trying to login the user. Available inbuilt function in passport
+      if(err) {
+        return res.status(500).json({
+          err: 'Could not login user'
+        })
+      }
+
+      User.findByIdAndUpdate(req.params.id, {'$set':{'verified': true}}, {new: true}, function(err, resp) {
+        if(err) throw err;
+        console.log("response ----- "+JSON.stringify(resp));
+
+        server.send({
+          text:    "Hi "+resp.name+", \n Your verification process is successfull. You can now login and get more informations.", 
+          from:    "Vishal <vishalvishal619@gmail.com>", 
+          to:      resp.name + "<" + resp.username +">",
+          bcc:      "Vishal Srinivasan <vishalvishal619@gmail.com>",
+          subject: "Verification successfull - APAARR PROCUREMENT SERVICES"
+        }, function(err, message) { 
+          if(err) throw err;
+          res.status(200).json({
+            status: 'Activation Successful',
+            success: true
+          });
+        });
+      } )
+      
+    })
+  })(req, res, next);
+})
 
 /**
  *  Adding another person as admin 
