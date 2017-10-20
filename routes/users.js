@@ -253,7 +253,7 @@ router.post('/updateUser', Verify.verifyOrdinaryUser, function(req, res) {
     server.send({
           text:    "Hi "+req.body.name+", \n This is a security email stating there is a change in your profile. Please login to apaarr.com and revert changes if it is not done by you. If you did this then leave this mail.", 
           from:    "Vishal <vishalvishal619@gmail.com>", 
-          to:      resp.body.name + "<" + resp.body.username +">",
+          to:      resp.name + "<" + resp.username +">",
           bcc:      "Vishal Srinivasan <vishalvishal619@gmail.com>",
           subject: "Profile update APAARR PROCUREMENT SERVICES"
         }, function(err, message) { 
