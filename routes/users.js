@@ -20,7 +20,9 @@ router.get('/', Verify.verifyOrdinaryUser, Verify.verifyAdminUser, function(req,
   })
 });
 
-/** Get a particular user */
+/** 
+ * Get a particular user
+ */
 router.get('/currentUser', Verify.verifyOrdinaryUser, function(req, res, next) {
   User.findById(req.decoded._doc._id, function(err, user) {
     if(err) throw err;
@@ -233,6 +235,37 @@ router.post("/activate/:id", function(req, res, next) {
       
     })
   })(req, res, next);
+})
+
+/**
+ * Updating a particular user
+ */
+router.post('/updateUser', Verify.verifyOrdinaryUser, function(req, res) {
+  // if(req.body.has(username || password)) {
+  //   res.status(403).json({
+  //     status: 'Not Authorized',
+  //     message: 'You are not allowed to do the specified action'
+  //   })
+  // }
+
+  User.findByIdAndUpdate(req.decoded._doc._id, {'$set': req.body}, {new: true}, function(err, resp) {
+    if(err) throw err;
+    server.send({
+          text:    "Hi "+req.body.name+", \n This is a security email stating there is a change in your profile. Please login to apaarr.com and revert changes if it is not done by you. If you did this then leave this mail.", 
+          from:    "Vishal <vishalvishal619@gmail.com>", 
+          to:      req.body.name + "<" + req.body.username +">",
+          bcc:      "Vishal Srinivasan <vishalvishal619@gmail.com>",
+          subject: "Profile update APAARR PROCUREMENT SERVICES"
+        }, function(err, message) { 
+          console.log(err || message);
+          return res.status(200).json({
+              status: 'success',
+              message: 'Your changes are saved successfully'
+            }) 
+        });
+    
+  })
+
 })
 
 /**
