@@ -130,7 +130,7 @@ router.post('/register', function(req, res){
         // send the message and get a callback with an error or details of the message that was sent
         console.log("Response from server and request from server: ------------------------------------------------------------------------------------- " + req, res + "------------------------------------------------------------------------------------ end -----------------------");
         server.send({
-          text:    "Hi, \n Please click the following link to activate your account http://localhost:4200/activate/" + req.user._id, 
+          text:    "Hi, \n Please click the following link to activate your account http://app.apaarr.com/#/activate/" + req.user._id, 
           from:    "Vishal <vishalvishal619@gmail.com>", 
           to:      req.body.name + "<" + req.body.username +">",
           bcc:      "Vishal Srinivasan <vishalvishal619@gmail.com>",
