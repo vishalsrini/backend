@@ -40,17 +40,17 @@ var app = express();
 //   next();
 // });
 
-app.use(function (req, res, next) { 
-  res.setHeader('Access-Control-Allow-Origin', '*'); 
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); 
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization, x-access-token'); 
-  res.setHeader('Access-Control-Allow-Credentials', true); 
-  if ('OPTIONS' === req.method) { 
-    res.sendStatus(204); 
-  } else { 
-    next(); 
-  } 
-});
+// app.use(function (req, res, next) { 
+//   res.setHeader('Access-Control-Allow-Origin', '*'); 
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); 
+//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization, x-access-token'); 
+//   res.setHeader('Access-Control-Allow-Credentials', true); 
+//   if ('OPTIONS' === req.method) { 
+//     res.sendStatus(204); 
+//   } else { 
+//     next(); 
+//   } 
+// });
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
