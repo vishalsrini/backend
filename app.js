@@ -34,28 +34,28 @@ db.once('open', function () {
 
 var app = express();
 
-// app.use(function (req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-access-token");
-//   next();
-// });
-
-app.use(function (req, res, next) { 
-  res.setHeader('Access-Control-Allow-Origin', '*'); 
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); 
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization, x-access-token'); 
-  res.setHeader('Access-Control-Allow-Credentials', true); 
-  if ('OPTIONS' === req.method) { 
-    res.sendStatus(204); 
-  } else { 
-    next(); 
-  } 
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-access-token");
+  next();
 });
 
+// app.use(function (req, res, next) { 
+//   res.setHeader('Access-Control-Allow-Origin', '*'); 
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); 
+//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, Authorization, x-access-token'); 
+//   res.setHeader('Access-Control-Allow-Credentials', true); 
+//   if ('OPTIONS' === req.method) { 
+//     res.sendStatus(204); 
+//   } else { 
+//     next(); 
+//   } 
+// });
+
 // view engine setup
-// app.set('views', path.join(__dirname, 'views'));
-// app.set('view engine', 'jade');
-app.use(express.static('views'))
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
+//app.use(express.static('views'))
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

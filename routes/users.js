@@ -24,9 +24,10 @@ router.get('/', Verify.verifyOrdinaryUser, Verify.verifyAdminUser, function(req,
  * Get a particular user
  */
 router.get('/currentUser', Verify.verifyOrdinaryUser, function(req, res, next) {
+ console.log('current user', req.decoded._doc._id);
   User.findById(req.decoded._doc._id, function(err, user) {
     if(err) throw err;
-    console.log(user);
+    console.log(user.username);
     res.status(200).json(user);
   })
 });
