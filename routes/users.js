@@ -53,10 +53,11 @@ router.post('/register', function(req, res){
     }
 
     if(req.body.image) {
-      user.image = req.body.image;
+      // user.image = req.body.image;
+      user.image = '/assets/img/logo.png'
       // user.image = '/images/profiles/'+req.body.name.charAt(0)+'.png'
     } else {
-      user.image = '/images/profiles/'+req.body.name.charAt(0)+'.png'
+      user.image = '/assets/img/logo.png'
     }
 
     if(req.body.phone) {
