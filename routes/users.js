@@ -270,7 +270,7 @@ router.post('/forgot', function (req, res, next) {
       subject: "Password Change request - from APAARR PROCUREMENT SERVICES"
     }, function (err, message) {
       console.log(err || message);
-      return res.status(200).json({ status: 'A link has been sent to your mail! Use it to reset your password' });
+      return res.status(200).json({ message: 'A link has been sent to your mail! Use it to reset your password' });
     });
   })
 })
@@ -284,7 +284,7 @@ router.post('/forgotPassword/:id', function (req, res, next) {
    */
   User.findById(req.params.id, function (err, resp) {
     if (err) {
-      return res.status(500).json({ message: 'This user does not exist' });
+      return res.status(500).json({ status: 'This user does not exist' });
     }
     User.findByUsername(req.body.username, function (err, sanitizedUser) {
       if (sanitizedUser) {
@@ -298,11 +298,11 @@ router.post('/forgotPassword/:id', function (req, res, next) {
             subject: "Password Changed Successfully - from APAARR PROCUREMENT SERVICES"
           }, function (err, message) {
             console.log(err || message);
-            return res.status(200).json({ message: 'password reset successful' });
+            return res.status(200).json({ status: 'password reset successful' });
           });
         });
       } else {
-        res.status(500).json({ message: 'This user does not exist' });
+        res.status(500).json({ status: 'This user does not exist' });
       }
     })
   })
