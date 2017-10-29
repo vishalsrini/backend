@@ -67,7 +67,7 @@ router.post('/register', function (req, res) {
     /** User.register currently there on passportLocalMongoose implemented in USER model 
      *  parameters (username, password, callback function) Username mush come from a model (object)
      */
-    User.register(new User({ username: req.body.username }), req.body.password, function (err, user) {
+    User.register(new User({ username: req.body.username.toLowerCase() }), req.body.password, function (err, user) {
       if (err) {
         return res.status(500).json({ err: err });
       }
@@ -180,7 +180,7 @@ router.post('/register', function (req, res) {
  * Resending verification mail
  */
 router.post('/resend', function(req, res, next) {
-  User.findByUsername(req.body.username, function(err, user) {
+  User.findByUsername(req.body.username.toLowerCase(), function(err, user) {
     if(err) {
       return res.status(500).json({
         message: 'User doesnt exist'
@@ -212,6 +212,7 @@ router.post('/login', function (req, res, next) {
   /**
    * User authentication done using passport
    */
+  req.body.username = req.body.username.toLowerCase();
   passport.authenticate('local', function (err, user, info) {
 
     if (err) {
@@ -255,7 +256,7 @@ router.post('/forgot', function (req, res, next) {
   /**
    * Sending forgot password link in mail
    */
-  User.findByUsername(req.body.username, function (err, user) {
+  User.findByUsername(req.body.username.toLowerCase(), function (err, user) {
     if(err) {
       return res.status(403).json({
         message: 'User not found'
@@ -286,7 +287,7 @@ router.post('/forgotPassword/:id', function (req, res, next) {
     if (err) {
       return res.status(500).json({ status: 'This user does not exist' });
     }
-    User.findByUsername(req.body.username, function (err, sanitizedUser) {
+    User.findByUsername(req.body.username.toLowerCase(), function (err, sanitizedUser) {
       if (sanitizedUser) {
         sanitizedUser.setPassword(req.body.password, function () {
           sanitizedUser.save();
@@ -392,7 +393,7 @@ router.post('/updateUser', Verify.verifyOrdinaryUser, function (req, res) {
  *  Adding another person as admin 
  */
 router.post('/addAdmin', function (req, res) {
-  if (req.body.username == 'vishal@apaarr.com' && req.body.password == 'Ramamani123$') {
+  if (req.body.username.toLowerCase() == 'vishal@apaarr.com' && req.body.password == 'Ramamani123$') {
     User.findByUsername(req.body.admin.username, function (err, user) {
       if (err) throw err;
       if (req.body.admin.status == true) {
