@@ -1,12 +1,13 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var rawOfferNegotiationsSchema = new Schema({
+var rawReqNegotiationsSchema = new Schema({
     // type: String,       // Raw / Processed
     // from: String,       // offers / requirements
     negotiatedItemId: {
+        // unique: true,
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'rawcashewoffer'
+        ref: 'rawcashewreq'
     },
     status: {           // active / closed
         type: String,  
@@ -20,4 +21,5 @@ var rawOfferNegotiationsSchema = new Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model('rawOfferNegotiationsSchema', rawOfferNegotiationsSchema);
+rawReqNegotiationsSchema.index({ negotiatedItemId: 1, negotiatedBy: 1}, { unique: true, sparse: true });
+module.exports = mongoose.model('rawReqNegotiations', rawReqNegotiationsSchema);

@@ -5,6 +5,7 @@ var rawOfferNegotiationsSchema = new Schema({
     // type: String,       // Raw / Processed
     // from: String,       // offers / requirements
     negotiatedItemId: {
+        // unique: true,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'rawcashewoffer'
     },
@@ -20,4 +21,5 @@ var rawOfferNegotiationsSchema = new Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model('rawOfferNegotiationsSchema', rawOfferNegotiationsSchema);
+rawOfferNegotiationsSchema.index({ negotiatedItemId: 1, negotiatedBy: 1}, { unique: true, sparse: true });
+module.exports = mongoose.model('rawOfferNegotiations', rawOfferNegotiationsSchema);
