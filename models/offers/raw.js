@@ -6,6 +6,7 @@ var rawCashewOffSchema = new Schema({
     origin: String,
     quantity: Number,
     price: Number,
+    currency: String,
     outTurn: Number,
     nutCount: Number,
     defective: Number,

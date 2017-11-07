@@ -6,6 +6,7 @@ var processedCashewReqSchema = new Schema({
     processedAt: String,
     quantity: Number,
     price: Number,
+    currency: String,
     type: String,
     grade: String, 
     defective: Number,
