@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var rawCashew = require('../models/offers/raw');               // Raw Cashew Model
 var processedCashew = require('../models/offers/processed');   // Processed Cashe Model
 var verify = require('./verify');
+var cors = require('cors');
 
 var offersRouter = express.Router();
 
@@ -231,8 +232,11 @@ offersRouter.route('/processed/:cashewId')
     })
 })
 /** Update an offer */
-.put(verify.verifyOrdinaryUser,function(req, resp, next) {
+.put( verify.verifyOrdinaryUser,function(req, resp, next) {
+    // console.log('request body hei..', req.body, req.method);
     processedCashew.findById(req.params.cashewId, function(err, cashew) {
+        // console.log(req.headers);
+        // console.log(req.body);
         /** One cant delete other users post */
         if(req.body.hasOwnProperty('status')) {
             if (req.body.status == 'active') {
@@ -247,6 +251,7 @@ offersRouter.route('/processed/:cashewId')
         } else {
             processedCashew.findByIdAndUpdate(req.params.cashewId, {'$set':req.body}, {new: true}, function(err, res) {
                 if(err) throw err;
+                console.log(res);
                 resp.status(200).json({
                     status: 'success',
                     message: 'Updated Successfully',
@@ -255,6 +260,15 @@ offersRouter.route('/processed/:cashewId')
             });
         }
     });
+    // processedCashew.findByIdAndUpdate(req.params.cashewId, {'$set':req.body}, {new: true}, function(err, res) {
+    //     if(err) throw err;
+    //     console.log(res);
+    //     resp.status(200).json({
+    //         status: 'success',
+    //         message: 'Updated Successfully',
+    //         id: res._id
+    //     });
+    // });
 })
 /** Delete an offer */
 .delete(verify.verifyOrdinaryUser,function(req, resp, next) {

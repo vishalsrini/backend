@@ -4,6 +4,7 @@ var passport = require('passport');
 var User = require('../models/user');
 var Verify = require('./verify');
 var email = require("emailjs");
+var urlCrypt = require('url-crypt')('~{ry*I)==yU/]9<7DPk!Hj"R#:-/Z7(hTBnlRS=4CXF');
 
 var server = email.server.connect({
   user: "vishalvishal619@gmail.com",
@@ -67,7 +68,7 @@ router.post('/register', function (req, res) {
     /** User.register currently there on passportLocalMongoose implemented in USER model 
      *  parameters (username, password, callback function) Username mush come from a model (object)
      */
-    User.register(new User({ username: req.body.username.toLowerCase() }), req.body.password, function (err, user) {
+    User.register(new User({ username: req.body.username.trim().toLowerCase() }), req.body.password, function (err, user) {
       if (err) {
         return res.status(500).json({ err: err });
       }
@@ -157,7 +158,7 @@ router.post('/register', function (req, res) {
         /** Authenticate yourself using passport. This is local authentication */
         passport.authenticate('local')(req, res, function () {
           // send the message and get a callback with an error or details of the message that was sent
-          console.log("Response from server and request from server: ------------------------------------------------------------------------------------- " + req, res + "------------------------------------------------------------------------------------ end -----------------------");
+          // console.log("Response from server and request from server: ------------------------------------------------------------------------------------- " + req, res + "------------------------------------------------------------------------------------ end -----------------------");
           server.send({
             text: "Hi, \n Please click the following link to activate your account http://app.apaarr.com/#/activate/" + req.user._id,
             from: "Vishal <vishalvishal619@gmail.com>",
@@ -180,7 +181,7 @@ router.post('/register', function (req, res) {
  * Resending verification mail
  */
 router.post('/resend', function(req, res, next) {
-  User.findByUsername(req.body.username.toLowerCase(), function(err, user) {
+  User.findByUsername(req.body.username.trim().toLowerCase(), function(err, user) {
     if(err) {
       return res.status(500).json({
         message: 'User doesnt exist'
@@ -192,7 +193,7 @@ router.post('/resend', function(req, res, next) {
       })
     }
     server.send({
-            text: "Hi, \n Please click the following link to activate your account http://app.apaarr.com/#/activate/" + user._id,
+            text: "Hi, \n Please click the following link to activate your account http://app.apaarr.com/#/activate/" + urlCrypt.cryptObj(user._id),
             from: "Vishal <vishalvishal619@gmail.com>",
             to: user.name + "<" + user.username + ">",
             bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
@@ -212,7 +213,7 @@ router.post('/login', function (req, res, next) {
   /**
    * User authentication done using passport
    */
-  req.body.username = req.body.username.toLowerCase();
+  req.body.username = req.body.username.trim().toLowerCase();
   passport.authenticate('local', function (err, user, info) {
 
     if (err) {
@@ -256,15 +257,16 @@ router.post('/forgot', function (req, res, next) {
   /**
    * Sending forgot password link in mail
    */
-  User.findByUsername(req.body.username.toLowerCase(), function (err, user) {
-    if(err) {
+  User.findByUsername(req.body.username.trim().toLowerCase(), function (err, user) {
+    if(err || !user || user == null ) {
       return res.status(403).json({
         message: 'User not found'
       })
     }
+
     console.log(user);
     server.send({
-      text: "Hi, \n Please click the following link to change your password http://app.apaarr.com/#/forgot-password/" + user._id,
+      text: "Hi, \n Please click the following link to change your password http://app.apaarr.com/#/forgot-password/" + urlCrypt.cryptObj(user._id),
       from: "Vishal <vishalvishal619@gmail.com>",
       to: user.name + "<" + user.username + ">",
       bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
@@ -283,12 +285,13 @@ router.post('/forgotPassword/:id', function (req, res, next) {
   /**
    * forgot password link
    */
-  User.findById(req.params.id, function (err, resp) {
+  const id = urlCrypt.decryptObj(req.params.id);
+  User.findById(id, function (err, resp) {
     if (err) {
-      return res.status(500).json({ status: 'This user does not exist' });
+      return res.status(500).json({ message: 'This user does not exist' });
     }
     User.findByUsername(req.body.username.toLowerCase(), function (err, sanitizedUser) {
-      if (sanitizedUser) {
+      if (sanitizedUser && (sanitizedUser._id == id)) {
         sanitizedUser.setPassword(req.body.password, function () {
           sanitizedUser.save();
           server.send({
@@ -303,7 +306,7 @@ router.post('/forgotPassword/:id', function (req, res, next) {
           });
         });
       } else {
-        res.status(500).json({ status: 'This user does not exist' });
+        res.status(500).json({ message: 'This user does not exist. Send us a mail, if problem persist' });
       }
     })
   })
@@ -335,7 +338,9 @@ router.post("/activate/:id", function (req, res, next) {
         })
       }
 
-      User.findByIdAndUpdate(req.params.id, { '$set': { 'verified': true } }, { new: true }, function (err, resp) {
+      const id = urlCrypt.decryptObj(req.params.id);
+
+      User.findByIdAndUpdate(id, { '$set': { 'verified': true } }, { new: true }, function (err, resp) {
         if (err) throw err;
         console.log("response ----- " + JSON.stringify(resp));
 

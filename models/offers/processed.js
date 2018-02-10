@@ -14,7 +14,7 @@ var processedCashewOffSchema = new Schema({
     quality: String,
     nslg: Number,
     packing: String,
-    inspection: Boolean,
+    inspection: String,
     location: String,
     shipment: String,
     fob: {

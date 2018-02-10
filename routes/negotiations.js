@@ -7,6 +7,7 @@ var rawOffNeg = require('../models/negotiations/offers/raw');
 var processedOffNeg = require('../models/negotiations/offers/processed');
 var rawReqNeg = require('../models/negotiations/requirements/raw');
 var processedReqNeg = require('../models/negotiations/requirements/processed');
+var User = require('../models/user');
 
 var verify = require('./verify');
 
@@ -105,6 +106,8 @@ negotiationRouter.route('/users')
         })
     });
 
+// =============================================================================================================== //
+
 /**
  * Raw Cashew Offer
  */
@@ -118,17 +121,39 @@ negotiationRouter.route('/offer/raw')
     .post(verify.verifyOrdinaryUser, function (req, resp, next) {
         // if (rawOffNeg.find({ negotiatedItemId: req.body.negotiatedItemId }).limit(1).size() < 1) {
         req.body.negotiatedBy = req.decoded._doc._id;
-        rawOffNeg.create(req.body, function (err, res) {
+        const item = {
+            negotiatedBy: req.body.negotiatedBy,
+            negotiatedItemId: req.body.negotiatedItemId
+        }
+        rawOffNeg.create(item, function (err, res) {
             if (err) {
                 resp.status(200).json({
                     status: 'failed',
-                    message: 'Item already negotiated'
+                    message: 'Item already negotiated, Please check negotiate tab'
                 })
             } else {
-                resp.status(200).json({
-                    status: 'success',
-                    message: 'Successfully Negotiated'
-                })
+                User.findById(req.decoded._doc._id, function (err, resps) {
+                    if (err) {
+                        return resp.status(401).json({ status: 'This user does not exist' });
+                    }
+                    server.send({
+                        text: "Hi " + resps.name + ", \n Your Negotiation for the following item is sent for approval. \n \n Origin - " + req.body.origin + "\n Price (/MT)- " + req.body.currency + " " + req.body.price + " \n Nut Count - " + req.body.nutCount + "\n Year of Crop - " + req.body.year + "\n Quantity (MT) - " + req.body.quantity + "\n Payment Terms - " + req.body.paymentTerms + "\n Out Turn (lbs) - " + req.body.outTurn
+                            + " \n \n You will receive a mail or call regarding the status of your negotiation. You can also find the status by clicking negotiate tab in app.apaarr.com \n \n Regards, \n Apaarr Procurement Services",
+                        from: "Vishal <vishalvishal619@gmail.com>",
+                        to: resps.name + "<" + resps.username + ">",
+                        bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
+                        subject: "Negotiation Status from APAARR PROCUREMENT SERVICES"
+                    }, function (err, message) {
+                        console.log(err || message);
+                        if (err) throw err;
+                        return resp.status(200).json({ status: 'success', message: 'Successfully Negotiated' });
+                    });
+
+                    // resp.status(200).json({
+                    //     status: 'success',
+                    //     message: 'Successfully Negotiated'
+                    // })
+                });
             }
         })
         // } else {
@@ -151,19 +176,42 @@ negotiationRouter.route('/offer/processed')
         })
     })
     .post(verify.verifyOrdinaryUser, function (req, resp, next) {
+
         // if (processedOffNeg.find({ negotiatedItemId: req.body.negotiatedItemId }).limit(1).size() < 1) {
         req.body.negotiatedBy = req.decoded._doc._id;
-        processedOffNeg.create(req.body, function (err, res) {
+        const item = {
+            negotiatedBy: req.body.negotiatedBy,
+            negotiatedItemId: req.body.negotiatedItemId
+        }
+        processedOffNeg.create(item, function (err, res) {
             if (err) {
                 resp.status(200).json({
                     status: 'failed',
-                    message: 'Item already negotiated'
+                    message: 'Item already negotiated, Please check negotiate tab'
                 })
             } else {
-                resp.status(200).json({
-                    status: 'success',
-                    message: 'Successfully Negotiated'
-                })
+                User.findById(req.decoded._doc._id, function (err, resps) {
+                    if (err) {
+                        return resp.status(401).json({ status: 'This user does not exist' });
+                    }
+                    server.send({
+                        text: "Hi " + resps.name + ", \n Your Negotiation for the following item is sent for approval. \n \n Origin - " + req.body.origin + "\n Processed At - " + req.body.processedAt +"\n Price (/Kgs)- " + req.body.currency + " " + req.body.price + " \n Type - " + req.body.type + "\n Grade - " + req.body.grade + "\n Quantity (MT) - " + req.body.quantity + "\n Payment Terms - " + req.body.paymentTerms
+                            + " \n \n You will receive a mail or call regarding the status of your negotiation. You can also find the status by clicking negotiate tab in app.apaarr.com \n \n Regards, \n Apaarr Procurement Services",
+                        from: "Vishal <vishalvishal619@gmail.com>",
+                        to: resps.name + "<" + resps.username + ">",
+                        bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
+                        subject: "Negotiation Status from APAARR PROCUREMENT SERVICES"
+                    }, function (err, message) {
+                        console.log(err || message);
+                        if (err) throw err;
+                        return resp.status(200).json({ status: 'success', message: 'Successfully Negotiated' });
+                    });
+
+                    // resp.status(200).json({
+                    //     status: 'success',
+                    //     message: 'Successfully Negotiated'
+                    // })
+                });
             }
 
         })
@@ -185,17 +233,39 @@ negotiationRouter.route('/req/raw')
         // console.log(count);
         // if(count<1) {
         req.body.negotiatedBy = req.decoded._doc._id;
-        rawReqNeg.create(req.body, function (err, res) {
+        const item = {
+            negotiatedBy: req.body.negotiatedBy,
+            negotiatedItemId: req.body.negotiatedItemId
+        }
+        rawReqNeg.create(item, function (err, res) {
             if (err) {
                 resp.status(200).json({
                     status: 'failed',
-                    message: 'Item already negotiated'
+                    message: 'Item already negotiated, Please check negotiate tab'
                 })
             } else {
-                resp.status(200).json({
-                    status: 'success',
-                    message: 'Successfully Negotiated'
-                })
+                User.findById(req.decoded._doc._id, function (err, resps) {
+                    if (err) {
+                        return resp.status(401).json({ status: 'This user does not exist' });
+                    }
+                    server.send({
+                        text: "Hi " + resps.name + ", \n Your Negotiation for the following item is sent for approval. \n \n Origin - " + req.body.origin + "\n Price (/MT)- " + req.body.currency + " " + req.body.price + " \n Nut Count - " + req.body.nutCount + "\n Year of Crop - " + req.body.year + "\n Quantity (MT) - " + req.body.quantity + "\n Payment Terms - " + req.body.paymentTerms + "\n Out Turn (lbs) - " + req.body.outTurn
+                            + " \n \n You will receive a mail or call regarding the status of your negotiation. You can also find the status by clicking negotiate tab in app.apaarr.com \n \n Regards, \n Apaarr Procurement Services",
+                        from: "Vishal <vishalvishal619@gmail.com>",
+                        to: resps.name + "<" + resps.username + ">",
+                        bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
+                        subject: "Negotiation Status from APAARR PROCUREMENT SERVICES"
+                    }, function (err, message) {
+                        console.log(err || message);
+                        if (err) throw err;
+                        return resp.status(200).json({ status: 'success', message: 'Successfully Negotiated' });
+                    });
+
+                    // resp.status(200).json({
+                    //     status: 'success',
+                    //     message: 'Successfully Negotiated'
+                    // })
+                });
             }
         })
         // } else {
@@ -217,17 +287,39 @@ negotiationRouter.route('/req/processed')
     .post(verify.verifyOrdinaryUser, function (req, resp, next) {
         // if (processedReqNeg.find({ negotiatedItemId: req.body.negotiatedItemId }).limit(1).size() < 1) {
         req.body.negotiatedBy = req.decoded._doc._id;
+        const item = {
+            negotiatedBy: req.body.negotiatedBy,
+            negotiatedItemId: req.body.negotiatedItemId
+        }
         processedReqNeg.create(req.body, function (err, res) {
             if (err) {
                 resp.status(200).json({
                     status: 'failed',
-                    message: 'Item already negotiated'
+                    message: 'Item already negotiated, Please check negotiate tab'
                 })
             } else {
-                resp.status(200).json({
-                    status: 'success',
-                    message: 'Successfully Negotiated'
-                })
+                User.findById(req.decoded._doc._id, function (err, resps) {
+                    if (err) {
+                        return resp.status(401).json({ status: 'This user does not exist' });
+                    }
+                    server.send({
+                        text: "Hi " + resps.name + ", \n Your Negotiation for the following item is sent for approval. \n \n Origin - " + req.body.origin + "\n Processed At - " + req.body.processedAt +"\n Price (/Kgs)- " + req.body.currency + " " + req.body.price + " \n Type - " + req.body.type + "\n Grade - " + req.body.grade + "\n Quantity (MT) - " + req.body.quantity + "\n Payment Terms - " + req.body.paymentTerms
+                            + " \n \n You will receive a mail or call regarding the status of your negotiation. You can also find the status by clicking negotiate tab in app.apaarr.com \n \n Regards, \n Apaarr Procurement Services",
+                        from: "Vishal <vishalvishal619@gmail.com>",
+                        to: resps.name + "<" + resps.username + ">",
+                        bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
+                        subject: "Negotiation Status from APAARR PROCUREMENT SERVICES"
+                    }, function (err, message) {
+                        console.log(err || message);
+                        if (err) throw err;
+                        return resp.status(200).json({ status: 'success', message: 'Successfully Negotiated' });
+                    });
+
+                    // resp.status(200).json({
+                    //     status: 'success',
+                    //     message: 'Successfully Negotiated'
+                    // })
+                });
             }
         })
         // } else {
