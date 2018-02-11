@@ -13,6 +13,7 @@ var users = require('./routes/users');
 var offers = require('./routes/offers');
 var negotiations = require('./routes/negotiations');
 var requirements = require('./routes/requirements');
+var admin = require('./routes/admin');
 
 var mongoose = require('mongoose');
 
@@ -121,6 +122,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
+app.use('/admin', admin);
 app.use('/users', users);
 app.use('/req', requirements);
 app.use('/offers', offers);

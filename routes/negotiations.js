@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+// var rp = require('request-promise');
 
 // var negotiation = require('../models/negotiations');
 var rawOffNeg = require('../models/negotiations/offers/raw');
@@ -195,7 +196,7 @@ negotiationRouter.route('/offer/processed')
                         return resp.status(401).json({ status: 'This user does not exist' });
                     }
                     server.send({
-                        text: "Hi " + resps.name + ", \n Your Negotiation for the following item is sent for approval. \n \n Origin - " + req.body.origin + "\n Processed At - " + req.body.processedAt +"\n Price (/Kgs)- " + req.body.currency + " " + req.body.price + " \n Type - " + req.body.type + "\n Grade - " + req.body.grade + "\n Quantity (MT) - " + req.body.quantity + "\n Payment Terms - " + req.body.paymentTerms
+                        text: "Hi " + resps.name + ", \n Your Negotiation for the following item is sent for approval. \n \n Origin - " + req.body.origin + "\n Processed At - " + req.body.processedAt + "\n Price (/Kgs)- " + req.body.currency + " " + req.body.price + " \n Type - " + req.body.type + "\n Grade - " + req.body.grade + "\n Quantity (MT) - " + req.body.quantity + "\n Payment Terms - " + req.body.paymentTerms
                             + " \n \n You will receive a mail or call regarding the status of your negotiation. You can also find the status by clicking negotiate tab in app.apaarr.com \n \n Regards, \n Apaarr Procurement Services",
                         from: "Vishal <vishalvishal619@gmail.com>",
                         to: resps.name + "<" + resps.username + ">",
@@ -303,7 +304,7 @@ negotiationRouter.route('/req/processed')
                         return resp.status(401).json({ status: 'This user does not exist' });
                     }
                     server.send({
-                        text: "Hi " + resps.name + ", \n Your Negotiation for the following item is sent for approval. \n \n Origin - " + req.body.origin + "\n Processed At - " + req.body.processedAt +"\n Price (/Kgs)- " + req.body.currency + " " + req.body.price + " \n Type - " + req.body.type + "\n Grade - " + req.body.grade + "\n Quantity (MT) - " + req.body.quantity + "\n Payment Terms - " + req.body.paymentTerms
+                        text: "Hi " + resps.name + ", \n Your Negotiation for the following item is sent for approval. \n \n Origin - " + req.body.origin + "\n Processed At - " + req.body.processedAt + "\n Price (/Kgs)- " + req.body.currency + " " + req.body.price + " \n Type - " + req.body.type + "\n Grade - " + req.body.grade + "\n Quantity (MT) - " + req.body.quantity + "\n Payment Terms - " + req.body.paymentTerms
                             + " \n \n You will receive a mail or call regarding the status of your negotiation. You can also find the status by clicking negotiate tab in app.apaarr.com \n \n Regards, \n Apaarr Procurement Services",
                         from: "Vishal <vishalvishal619@gmail.com>",
                         to: resps.name + "<" + resps.username + ">",
@@ -376,5 +377,25 @@ negotiationRouter.route('/:negotiateId')
             });
         });
     });
+
+
+// negotiationRouter.route('/stock/india/nse')
+//     .get(function (req, resp, next) {
+//         console.log('stock');
+//         const options = {
+//             method: 'GET',
+//             uri: 'https://www.nseindia.com/live_market/dynaContent/live_watch/stock_watch/foSecStockWatch.json'
+//         };
+
+//         rp(options)
+//             .then(function (response) {
+//                 console.log(response);
+//                 resp.status(200).json(response);
+//                 // Request was successful, use the response object at will
+//             }).catch((err) => {
+//                 console.log(err)
+//                 resp.render('error')
+//             })
+//     });
 
 module.exports = negotiationRouter;

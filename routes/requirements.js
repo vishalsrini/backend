@@ -90,7 +90,7 @@ requirementsRouter.route('/raw')
 // .all(verify.verifyOrdinaryUser)
 /** Get all raw cashew requirements in system */ 
 .get(verify.verifyOrdinaryUser,function(req, resp, next ) {
-    rawCashewReq.find({}, function(err, cashew) {
+    rawCashewReq.find({status: "active"}, function(err, cashew) {
         if(err) throw err;
         resp.status(200).json(cashew);
     });
@@ -184,7 +184,7 @@ requirementsRouter.route('/processed')
 // .all(verify.verifyOrdinaryUser)
 /** Get all processed Cashews */
 .get(verify.verifyOrdinaryUser,function(req, resp, next) {
-    processedCashewReq.find({}, function(err, cashew) {
+    processedCashewReq.find({status: "active"}, function(err, cashew) {
         if(err) throw err;
         console.log(cashew);
         resp.status(200).json(cashew);
@@ -237,6 +237,7 @@ requirementsRouter.route('/processed/:processedId')
             err.status = 403;
             next(err);
         } else {
+            req.body.status = "inProgress";
             processedCashewReq.findByIdAndUpdate(req.params.processedId, {'$set':req.body}, {new: true}, function(err, cashew) {
                 if(err) throw err;
                 resp.status(200).json({
