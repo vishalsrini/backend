@@ -145,6 +145,7 @@ requirementsRouter.route('/raw/:rawCashewId')
             err.status = 403;
             next(err);
         } else {
+            req.body.status = "inProgress";
             rawCashewReq.findByIdAndUpdate(req.params.rawCashewId, {'$set': req.body}, {new: true}, function(err, res) {
                 if(err) throw err;
                 resp.status(200).json({
