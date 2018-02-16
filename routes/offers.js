@@ -248,6 +248,7 @@ offersRouter.route('/processed/:cashewId')
                 err.status = 403;
                 next(err);
             } else {
+                req.body.status = "inProgress";
                 processedCashew.findByIdAndUpdate(req.params.cashewId, { '$set': req.body }, { new: true }, function (err, res) {
                     if (err) throw err;
                     console.log(res);
