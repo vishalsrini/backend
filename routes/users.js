@@ -160,7 +160,7 @@ router.post('/register', function (req, res) {
           // send the message and get a callback with an error or details of the message that was sent
           // console.log("Response from server and request from server: ------------------------------------------------------------------------------------- " + req, res + "------------------------------------------------------------------------------------ end -----------------------");
           server.send({
-            text: "Hi, \n Please click the following link to activate your account http://app.apaarr.com/#/activate/" + req.user._id,
+            text: "Hi "+req.body.name+", \n Please click the following link to activate your account http://app.apaarr.com/#/activate/" + urlCrypt.cryptObj(req.user._id)  +"\n Regards, \n Apaarr Procurement Services.",
             from: "Vishal <vishalvishal619@gmail.com>",
             to: req.body.name + "<" + req.body.username + ">",
             bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
@@ -193,7 +193,7 @@ router.post('/resend', function(req, res, next) {
       })
     }
     server.send({
-            text: "Hi, \n Please click the following link to activate your account http://app.apaarr.com/#/activate/" + urlCrypt.cryptObj(user._id),
+            text: "Hi, \n Please click the following link to activate your account http://app.apaarr.com/#/activate/" + urlCrypt.cryptObj(user._id)  +"\n Regards, \n Apaarr Procurement Services.",
             from: "Vishal <vishalvishal619@gmail.com>",
             to: user.name + "<" + user.username + ">",
             bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
@@ -266,7 +266,7 @@ router.post('/forgot', function (req, res, next) {
 
     console.log(user);
     server.send({
-      text: "Hi, \n Please click the following link to change your password http://app.apaarr.com/#/forgot-password/" + urlCrypt.cryptObj(user._id),
+      text: "Hi, \n Please click the following link to change your password http://app.apaarr.com/#/forgot-password/" + urlCrypt.cryptObj(user._id)  +"\n Regards, \n Apaarr Procurement Services.",
       from: "Vishal <vishalvishal619@gmail.com>",
       to: user.name + "<" + user.username + ">",
       bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
@@ -345,7 +345,7 @@ router.post("/activate/:id", function (req, res, next) {
         console.log("response ----- " + JSON.stringify(resp));
 
         server.send({
-          text: "Hi " + resp.name + ", \n Your verification process is successfull. You can now login and get more informations.",
+          text: "Hi " + resp.name + ", \n Your verification process is successfull. You can now login and get more informations."  +"\n Regards, \n Apaarr Procurement Services.",
           from: "Vishal <vishalvishal619@gmail.com>",
           to: resp.name + "<" + resp.username + ">",
           bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
@@ -377,7 +377,7 @@ router.post('/updateUser', Verify.verifyOrdinaryUser, function (req, res) {
   User.findByIdAndUpdate(req.decoded._doc._id, { '$set': req.body }, { new: true }, function (err, resp) {
     if (err) throw err;
     server.send({
-      text: "Hi " + req.body.name + ", \n This is a security email stating there is a change in your profile. Please login to apaarr.com and revert changes if it is not done by you. If you did this then leave this mail.",
+      text: "Hi " + req.body.name + ", \n This is a security email stating there is a change in your profile. Please login to apaarr.com and revert changes if it is not done by you. If you did this then leave this mail."  +"\n Regards, \n Apaarr Procurement Services.",
       from: "Vishal <vishalvishal619@gmail.com>",
       to: resp.name + "<" + resp.username + ">",
       bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
