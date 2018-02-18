@@ -30,16 +30,16 @@ adminRouter.route('/')
                 processed: null
             }
         };
-        rawCashew.find({}, function (err, res) {
+        rawCashew.find({}).populate('postedBy').exec(function (err, res) {
             if (err) throw err;
             response.offers.raw = res;
-            processedCashew.find({}, function (err, res) {
+            processedCashew.find({}).populate('postedBy').exec( function (err, res) {
                 if (err) throw err;
                 response.offers.processed = res;
-                rawCashewReq.find({}, function (err, res) {
+                rawCashewReq.find({}).populate('postedBy').exec( function (err, res) {
                     if (err) throw err;
                     response.req.raw = res;
-                    processedCashewReq.find({}, function (err, res) {
+                    processedCashewReq.find({}).populate('postedBy').exec( function (err, res) {
                         if (err) throw err;
                         response.req.processed = res;
                         resp.status(200).json(response);
