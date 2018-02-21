@@ -183,7 +183,7 @@ router.post('/register', function (req, res) {
 router.post('/resend', function(req, res, next) {
   User.findByUsername(req.body.username.trim().toLowerCase(), function(err, user) {
     if(err || !user || user == null) {
-      return res.status(500).json({
+      return res.status(403).json({
         message: 'User doesnt exist'
       })
     }
@@ -288,7 +288,7 @@ router.post('/forgotPassword/:id', function (req, res, next) {
   const id = urlCrypt.decryptObj(req.params.id);
   User.findById(id, function (err, resp) {
     if (err || !resp || resp == null) {
-      return res.status(500).json({ message: 'This user does not exist' });
+      return res.status(403).json({ message: 'This user does not exist' });
     }
     User.findByUsername(req.body.username.toLowerCase(), function (err, sanitizedUser) {
       if (sanitizedUser && (sanitizedUser._id == id)) {
