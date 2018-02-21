@@ -46,7 +46,7 @@ negotiationRouter.route('/')
                 processed: []
             }
         };
-        rawOffNeg.find({ negotiatedBy: req.decoded._doc._id }).populate('negotiatedItemId').exec(function (err, res) {
+        rawOffNeg.find({ negotiatedBy: req.decoded._doc._id }).populate('negotiatedItemId', null, { status: 'active'}).exec(function (err, res) {
             if (err) throw err;
             resp.status(200).json(res);
         })
@@ -114,7 +114,7 @@ negotiationRouter.route('/users')
  */
 negotiationRouter.route('/offer/raw')
     .get(verify.verifyOrdinaryUser, function (req, resp, next) {
-        rawOffNeg.find({ negotiatedBy: req.decoded._doc._id }).populate('negotiatedItemId').exec(function (err, res) {
+        rawOffNeg.find({ negotiatedBy: req.decoded._doc._id }).populate('negotiatedItemId', null, { status: 'active'}).exec(function (err, res) {
             if (err) throw err;
             resp.status(200).json(res);
         })
@@ -171,7 +171,7 @@ negotiationRouter.route('/offer/raw')
  */
 negotiationRouter.route('/offer/processed')
     .get(verify.verifyOrdinaryUser, function (req, resp, next) {
-        processedOffNeg.find({ negotiatedBy: req.decoded._doc._id }).populate('negotiatedItemId').exec(function (err, res) {
+        processedOffNeg.find({ negotiatedBy: req.decoded._doc._id }).populate('negotiatedItemId', null, { status: 'active'}).exec(function (err, res) {
             if (err) throw err;
             resp.status(200).json(res);
         })
@@ -224,7 +224,7 @@ negotiationRouter.route('/offer/processed')
  */
 negotiationRouter.route('/req/raw')
     .get(verify.verifyOrdinaryUser, function (req, resp, next) {
-        rawReqNeg.find({ negotiatedBy: req.decoded._doc._id }).populate('negotiatedItemId').exec(function (err, res) {
+        rawReqNeg.find({ negotiatedBy: req.decoded._doc._id }).populate('negotiatedItemId', null, { status: 'active'}).exec(function (err, res) {
             if (err) throw err;
             resp.status(200).json(res);
         })
@@ -280,7 +280,7 @@ negotiationRouter.route('/req/raw')
  */
 negotiationRouter.route('/req/processed')
     .get(verify.verifyOrdinaryUser, function (req, resp, next) {
-        processedReqNeg.find({ negotiatedBy: req.decoded._doc._id }).populate('negotiatedItemId').exec(function (err, res) {
+        processedReqNeg.find({ negotiatedBy: req.decoded._doc._id }).populate('negotiatedItemId', null, { status: 'active'}).exec(function (err, res) {
             if (err) throw err;
             resp.status(200).json(res);
         })
