@@ -1,4 +1,5 @@
 var express = require('express');
+var request = require('request');
 var router = express.Router();
 var passport = require('passport');
 var User = require('../models/user');
@@ -159,16 +160,26 @@ router.post('/register', function (req, res) {
         passport.authenticate('local')(req, res, function () {
           // send the message and get a callback with an error or details of the message that was sent
           // console.log("Response from server and request from server: ------------------------------------------------------------------------------------- " + req, res + "------------------------------------------------------------------------------------ end -----------------------");
-          server.send({
-            text: "Hi "+req.body.name+", \n Please click the following link to activate your account http://app.apaarr.com/#/activate/" + urlCrypt.cryptObj(req.user._id)  +"\n Regards, \n Apaarr Procurement Services.",
-            from: "Vishal <vishalvishal619@gmail.com>",
-            to: req.body.name + "<" + req.body.username + ">",
-            bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
-            subject: "User Verification from APAARR PROCUREMENT SERVICES"
-          }, function (err, message) {
+          let formData = {
+            to: req.body.username,
+            subject: "User Verification from APAARR PROCUREMENT SERVICES",
+            message: "Hi " + req.body.name + ", <br> Please click the following link to activate your account <br> <a href=\"http://app.apaarr.com/#/activate/" + urlCrypt.cryptObj(req.user._id) + "\">Click Here </a> <br><br> Regards, <br> Apaarr Procurement Services."
+          }
+          // server.send({
+          //   text: "Hi " + req.body.name + ", \n Please click the following link to activate your account http://app.apaarr.com/#/activate/" + urlCrypt.cryptObj(req.user._id) + "\n Regards, \n Apaarr Procurement Services.",
+          //   from: "Vishal <vishalvishal619@gmail.com>",
+          //   to: req.body.name + "<" + req.body.username + ">",
+          //   bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
+          //   subject: "User Verification from APAARR PROCUREMENT SERVICES"
+          // }, function (err, message) {
+          //   console.log(err || message);
+          //   if (err) throw err;
+          //   return res.status(200).json({ status: 'Registration Successful!' });
+          // });
+          request.post({ url: "http://apaarr.com/generic_mail.php", formData: formData }, function (err, message) {
             console.log(err || message);
             if (err) throw err;
-            return res.status(200).json({ status: 'Registration Successful!' });
+            return res.status(200).json({ status: 'Registration Successful! Kindly check your mailbox to activate your account' });
           });
 
         });
@@ -180,29 +191,39 @@ router.post('/register', function (req, res) {
 /**
  * Resending verification mail
  */
-router.post('/resend', function(req, res, next) {
-  User.findByUsername(req.body.username.trim().toLowerCase(), function(err, user) {
-    if(err || !user || user == null) {
+router.post('/resend', function (req, res, next) {
+  User.findByUsername(req.body.username.trim().toLowerCase(), function (err, user) {
+    if (err || !user || user == null) {
       return res.status(403).json({
         message: 'User doesnt exist'
       })
     }
-    if(user.verified == true) {
+    if (user.verified == true) {
       return res.status(200).json({
         message: 'User Already Verified!!'
       })
     }
-    server.send({
-            text: "Hi, \n Please click the following link to activate your account http://app.apaarr.com/#/activate/" + urlCrypt.cryptObj(user._id)  +"\n Regards, \n Apaarr Procurement Services.",
-            from: "Vishal <vishalvishal619@gmail.com>",
-            to: user.name + "<" + user.username + ">",
-            bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
-            subject: "User Verification from APAARR PROCUREMENT SERVICES"
-          }, function (err, message) {
-            console.log(err || message);
-            if (err) throw err;
-            return res.status(200).json({ message: 'Verification mail sent again. Kindly check your mailbox' });
-          });
+    let formData = {
+      subject: "User Verification from APAARR PROCUREMENT SERVICES",
+      message: "Hi, <br> Please click the following link to activate your account <br><br> <a href=\"http://app.apaarr.com/#/activate/" + urlCrypt.cryptObj(user._id) + "\"> Verify </a><br><br><br> Regards, <br> Apaarr Procurement Services.",
+      to: user.username
+    };
+    // server.send({
+    //         text: "Hi, \n Please click the following link to activate your account http://app.apaarr.com/#/activate/" + urlCrypt.cryptObj(user._id)  +"\n Regards, \n Apaarr Procurement Services.",
+    //         from: "Vishal <vishalvishal619@gmail.com>",
+    //         to: user.name + "<" + user.username + ">",
+    //         bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
+    //         subject: "User Verification from APAARR PROCUREMENT SERVICES"
+    //       }, function (err, message) {
+    //         console.log(err || message);
+    //         if (err) throw err;
+    //         return res.status(200).json({ message: 'Verification mail sent again. Kindly check your mailbox' });
+    //       });
+    request.post({ url: "http://apaarr.com/generic_mail.php", formData: formData }, function (err, message) {
+      console.log(err || message);
+      if (err) throw err;
+      return res.status(200).json({ message: 'Verification mail sent again. Kindly check your mailbox' });
+    });
   })
 })
 
@@ -258,23 +279,35 @@ router.post('/forgot', function (req, res, next) {
    * Sending forgot password link in mail
    */
   User.findByUsername(req.body.username.trim().toLowerCase(), function (err, user) {
-    if(err || !user || user == null ) {
+    if (err || !user || user == null) {
       return res.status(403).json({
         message: 'User not found'
       })
     }
 
     console.log(user);
-    server.send({
-      text: "Hi, \n Please click the following link to change your password http://app.apaarr.com/#/forgot-password/" + urlCrypt.cryptObj(user._id)  +"\n Regards, \n Apaarr Procurement Services.",
-      from: "Vishal <vishalvishal619@gmail.com>",
-      to: user.name + "<" + user.username + ">",
-      bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
-      subject: "Password Change request - from APAARR PROCUREMENT SERVICES"
-    }, function (err, message) {
+    // server.send({
+    //   text: "Hi, \n Please click the following link to change your password http://app.apaarr.com/#/forgot-password/" + urlCrypt.cryptObj(user._id) + "\n Regards, \n Apaarr Procurement Services.",
+    //   from: "Vishal <vishalvishal619@gmail.com>",
+    //   to: user.name + "<" + user.username + ">",
+    //   bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
+    //   subject: "Password Change request - from APAARR PROCUREMENT SERVICES"
+    // }, function (err, message) {
+    //   console.log(err || message);
+    //   return res.status(200).json({ message: 'A link has been sent to your mail! Use it to reset your password' });
+    // });
+    let formData = {
+      to: user.username,
+      subject: "Password Change request - from APAARR PROCUREMENT SERVICES",
+      message: "Hi "+user.name+", <br> Please click the following link to change your password <br><a href=\"http://app.apaarr.com/#/forgot-password/" + urlCrypt.cryptObj(user._id) + "\">Click here</a><br><br> Regards, \n Apaarr Procurement Services."
+    }
+
+    request.post({ url: "http://apaarr.com/generic_mail.php", formData: formData }, function (err, message) {
       console.log(err || message);
+      if (err) throw err;
       return res.status(200).json({ message: 'A link has been sent to your mail! Use it to reset your password' });
     });
+    
   })
 })
 
@@ -294,16 +327,28 @@ router.post('/forgotPassword/:id', function (req, res, next) {
       if (sanitizedUser && (sanitizedUser._id == id)) {
         sanitizedUser.setPassword(req.body.password, function () {
           sanitizedUser.save();
-          server.send({
-            text: "Hi, \n Your password has been changed now. Kindly check apaarr.com if it is not done by you. \n \n Regards, \n Apaarr Procurement Services.",
-            from: "Vishal <vishalvishal619@gmail.com>",
-            to: sanitizedUser.name + "<" + sanitizedUser.username + ">",
-            bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
-            subject: "Password Changed Successfully - from APAARR PROCUREMENT SERVICES"
-          }, function (err, message) {
+          // server.send({
+          //   text: "Hi, \n Your password has been changed now. Kindly check apaarr.com if it is not done by you. \n \n Regards, \n Apaarr Procurement Services.",
+          //   from: "Vishal <vishalvishal619@gmail.com>",
+          //   to: sanitizedUser.name + "<" + sanitizedUser.username + ">",
+          //   bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
+          //   subject: "Password Changed Successfully - from APAARR PROCUREMENT SERVICES"
+          // }, function (err, message) {
+          //   console.log(err || message);
+          //   return res.status(200).json({ status: 'password reset successful' });
+          // });
+          let formData = {
+            to: sanitizedUser.username,
+            subject: "Password Changed Successfully - from APAARR PROCUREMENT SERVICES",
+            message: "Hi "+sanitizedUser.name +", <br> Your password has been changed now. Kindly check apaarr.com if it is not done by you. <br> <br> Regards, <br> Apaarr Procurement Services."
+          }
+      
+          request.post({ url: "http://apaarr.com/generic_mail.php", formData: formData }, function (err, message) {
             console.log(err || message);
+            if (err) throw err;
             return res.status(200).json({ status: 'password reset successful' });
           });
+
         });
       } else {
         res.status(500).json({ message: 'This user does not exist. Send us a mail, if problem persist' });
@@ -344,19 +389,34 @@ router.post("/activate/:id", function (req, res, next) {
         if (err) throw err;
         console.log("response ----- " + JSON.stringify(resp));
 
-        server.send({
-          text: "Hi " + resp.name + ", \n Your verification process is successfull. You can now login and get more informations."  +"\n Regards, \n Apaarr Procurement Services.",
-          from: "Vishal <vishalvishal619@gmail.com>",
-          to: resp.name + "<" + resp.username + ">",
-          bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
-          subject: "Verification successfull - APAARR PROCUREMENT SERVICES"
-        }, function (err, message) {
+        // server.send({
+        //   text: "Hi " + resp.name + ", \n Your verification process is successfull. You can now login and get more informations." + "\n Regards, \n Apaarr Procurement Services.",
+        //   from: "Vishal <vishalvishal619@gmail.com>",
+        //   to: resp.name + "<" + resp.username + ">",
+        //   bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
+        //   subject: "Verification successfull - APAARR PROCUREMENT SERVICES"
+        // }, function (err, message) {
+        //   if (err) throw err;
+        //   res.status(200).json({
+        //     status: 'Activation Successful',
+        //     success: true
+        //   });
+        // });
+
+        let formData = {
+          to: resp.username,
+          subject: "Verification successfull - APAARR PROCUREMENT SERVICES",
+          message: "Hi " + resp.name + ", <br> Your verification process is successfull. You can now login and get more informations." + "<br> Regards, <br> Apaarr Procurement Services."
+        }
+    
+        request.post({ url: "http://apaarr.com/generic_mail.php", formData: formData }, function (err, message) {
+          console.log(err || message);
           if (err) throw err;
           res.status(200).json({
             status: 'Activation Successful',
             success: true
           });
-        });
+      });
       })
 
     })
@@ -376,19 +436,35 @@ router.post('/updateUser', Verify.verifyOrdinaryUser, function (req, res) {
 
   User.findByIdAndUpdate(req.decoded._doc._id, { '$set': req.body }, { new: true }, function (err, resp) {
     if (err) throw err;
-    server.send({
-      text: "Hi " + req.body.name + ", \n This is a security email stating there is a change in your profile. Please login to apaarr.com and revert changes if it is not done by you. If you did this then leave this mail."  +"\n Regards, \n Apaarr Procurement Services.",
-      from: "Vishal <vishalvishal619@gmail.com>",
-      to: resp.name + "<" + resp.username + ">",
-      bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
-      subject: "Profile update APAARR PROCUREMENT SERVICES"
-    }, function (err, message) {
+    // server.send({
+    //   text: "Hi " + req.body.name + ", \n This is a security email stating there is a change in your profile. Please login to apaarr.com and revert changes if it is not done by you. If you did this then leave this mail." + "\n Regards, \n Apaarr Procurement Services.",
+    //   from: "Vishal <vishalvishal619@gmail.com>",
+    //   to: resp.name + "<" + resp.username + ">",
+    //   bcc: "Vishal Srinivasan <vishalvishal619@gmail.com>",
+    //   subject: "Profile update APAARR PROCUREMENT SERVICES"
+    // }, function (err, message) {
+    //   console.log(err || message);
+    //   return res.status(200).json({
+    //     status: 'success',
+    //     message: 'Your changes are saved successfully'
+    //   })
+    // });
+
+    let formData = {
+      to: resp.username,
+      subject: "Verification successfull - APAARR PROCUREMENT SERVICES",
+      message: "Hi " + req.body.name + ", <br> This is a security email stating there is a change in your profile. Please login to apaarr.com and revert changes if it is not done by you. If you did this then leave this mail." + "<br> Regards, <br> Apaarr Procurement Services."
+    }
+
+    request.post({ url: "http://apaarr.com/generic_mail.php", formData: formData }, function (err, message) {
       console.log(err || message);
-      return res.status(200).json({
+      if (err) throw err;
+      res.status(200).json({
         status: 'success',
-        message: 'Your changes are saved successfully'
-      })
-    });
+        message: 'Your changes are saved successfully',
+        success: true
+      });
+  });
 
   })
 
