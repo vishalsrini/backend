@@ -6,6 +6,7 @@ var rawCashew = require('../models/offers/raw');               // Raw Cashew Mod
 var processedCashew = require('../models/offers/processed');   // Processed Cashe Model
 var verify = require('./verify');
 var cors = require('cors');
+var cashewStatus = 'active'; // Change to 'inProgress'
 
 var offersRouter = express.Router();
 
@@ -155,7 +156,7 @@ offersRouter.route('/raw/:cashewId')
                 err.status = 403;
                 next(err);
             } else {
-                req.body.status = "inProgress";
+                req.body.status = cashewStatus;
                 rawCashew.findByIdAndUpdate(req.params.cashewId, { '$set': req.body }, { new: true }, function (err, res) {
                     if (err) throw err;
                     resp.status(200).json({
@@ -248,7 +249,7 @@ offersRouter.route('/processed/:cashewId')
                 err.status = 403;
                 next(err);
             } else {
-                req.body.status = "inProgress";
+                req.body.status = cashewStatus;
                 processedCashew.findByIdAndUpdate(req.params.cashewId, { '$set': req.body }, { new: true }, function (err, res) {
                     if (err) throw err;
                     console.log(res);

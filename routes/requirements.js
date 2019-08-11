@@ -5,6 +5,7 @@ var mongoose = require('mongoose');
 var rawCashewReq = require('../models/requirements/raw');               // Raw Cashew Model
 var processedCashewReq = require('../models/requirements/processed');   // Processed Cashe Model
 var verify = require('./verify');
+var cashewStatus = 'active'; // change to 'inProgress'
 
 var requirementsRouter = express.Router();
 
@@ -145,7 +146,7 @@ requirementsRouter.route('/raw/:rawCashewId')
             err.status = 403;
             next(err);
         } else {
-            req.body.status = "inProgress";
+            req.body.status = cashewStatus;
             rawCashewReq.findByIdAndUpdate(req.params.rawCashewId, {'$set': req.body}, {new: true}, function(err, res) {
                 if(err) throw err;
                 resp.status(200).json({
@@ -238,7 +239,7 @@ requirementsRouter.route('/processed/:processedId')
             err.status = 403;
             next(err);
         } else {
-            req.body.status = "inProgress";
+            req.body.status = cashewStatus;
             processedCashewReq.findByIdAndUpdate(req.params.processedId, {'$set':req.body}, {new: true}, function(err, cashew) {
                 if(err) throw err;
                 resp.status(200).json({
