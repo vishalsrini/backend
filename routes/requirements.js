@@ -102,7 +102,7 @@ requirementsRouter.route('/raw')
         if(err) throw err;
         resp.status(200).json({
             status: 'success',
-            message: 'Requirement posted successfully',
+            message: 'Entry Sent for Approval. Progress can be seen in dashboard',
             id: cashew._id
         });
     });
@@ -199,7 +199,7 @@ requirementsRouter.route('/processed')
         if(err) throw err;
         resp.status(200).json({
             status: 'success',
-            message: 'processed cashew added successfully',
+            message: 'Entry Sent for Approval. Progress can be seen in dashboard',
             id: cashew._id
         })
     });

@@ -113,7 +113,7 @@ offersRouter.route('/raw')
             if (err) throw err;
             resp.status(200).json({
                 status: 'success',
-                message: 'Created Successfully',
+                message: 'Entry Sent for Approval. Progress can be seen in dashboard',
                 id: res._id
             });
         });
@@ -204,7 +204,7 @@ offersRouter.route('/processed')
             if (err) throw err;
             resp.status(200).json({
                 status: 'success',
-                message: 'Created Successfully',
+                message: 'Entry Sent for Approval. Progress can be seen in dashboard',
                 id: cashew._id
             });
         });
