@@ -11,7 +11,7 @@
     "cors": "^2.8.4",
     "debug": "~2.6.3",
     "emailjs": "^1.0.11",
-    "express": "~4.15.2",
+    "express": "~4.17.3",
     "jade": "~1.11.0",
     "jsonwebtoken": "^7.4.1",
     "lodash": "^4.17.5",
